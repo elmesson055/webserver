@@ -1,0 +1,1 @@
+csrf_token|s:64:"ab67499247c11d2c76ec5c2d253db9e092ffc87d519f864d3d9aa515c540048c";message|s:53:"Você precisa estar logado para acessar esta página.";message_type|s:7:"warning";redirect_after_login|s:31:"/app/modules/usuarios/index.php";user_id|i:4;username|s:15:"admin_logistica";role_id|i:13;

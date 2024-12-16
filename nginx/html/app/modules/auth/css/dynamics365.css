@@ -1,0 +1,183 @@
+/* Microsoft Dynamics 365 Style Theme */
+
+:root {
+    /* Colors */
+    --dynamics-primary: #0078D4;
+    --dynamics-secondary: #605E5C;
+    --dynamics-background: #FFFFFF;
+    --dynamics-surface: #F8F9FA;
+    --dynamics-sidebar: #1B1B1F;
+    --dynamics-text-primary: #252525;
+    --dynamics-text-secondary: #605E5C;
+    --dynamics-border: #E1E1E1;
+    
+    /* Typography */
+    --dynamics-font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    --dynamics-font-size-base: 14px;
+    --dynamics-line-height: 1.5;
+    
+    /* Spacing */
+    --dynamics-spacing-xs: 4px;
+    --dynamics-spacing-sm: 8px;
+    --dynamics-spacing-md: 16px;
+    --dynamics-spacing-lg: 24px;
+    --dynamics-spacing-xl: 32px;
+}
+
+/* Layout Components */
+.dynamics-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--dynamics-background);
+    color: var(--dynamics-text-primary);
+    font-family: var(--dynamics-font-family);
+}
+
+/* Sidebar */
+.dynamics-sidebar {
+    width: 250px;
+    background-color: var(--dynamics-sidebar);
+    color: white;
+    padding: var(--dynamics-spacing-md);
+}
+
+/* Header */
+.dynamics-header {
+    height: 48px;
+    background-color: var(--dynamics-primary);
+    color: white;
+    padding: 0 var(--dynamics-spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Main Content */
+.dynamics-main {
+    flex: 1;
+    padding: var(--dynamics-spacing-lg);
+    background-color: var(--dynamics-surface);
+}
+
+/* Cards */
+.dynamics-card {
+    background-color: var(--dynamics-background);
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: var(--dynamics-spacing-md);
+    margin-bottom: var(--dynamics-spacing-md);
+}
+
+/* Workspace Cards */
+.dynamics-workspace {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--dynamics-spacing-md);
+    padding: var(--dynamics-spacing-md);
+}
+
+.workspace-card {
+    background: white;
+    border: 1px solid var(--dynamics-border);
+    border-radius: 2px;
+    padding: var(--dynamics-spacing-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.workspace-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Data Grid */
+.dynamics-grid {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.dynamics-grid th {
+    background: var(--dynamics-surface);
+    padding: var(--dynamics-spacing-sm) var(--dynamics-spacing-md);
+    text-align: left;
+    font-weight: 600;
+}
+
+.dynamics-grid td {
+    padding: var(--dynamics-spacing-sm) var(--dynamics-spacing-md);
+    border-bottom: 1px solid var(--dynamics-border);
+}
+
+/* Summary Cards */
+.dynamics-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--dynamics-spacing-md);
+    margin-bottom: var(--dynamics-spacing-lg);
+}
+
+.summary-card {
+    background: var(--dynamics-primary);
+    color: white;
+    padding: var(--dynamics-spacing-md);
+    border-radius: 2px;
+}
+
+/* Buttons */
+.dynamics-button {
+    background: var(--dynamics-primary);
+    color: white;
+    border: none;
+    padding: var(--dynamics-spacing-sm) var(--dynamics-spacing-md);
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--dynamics-font-family);
+    transition: background-color 0.2s ease;
+}
+
+.dynamics-button:hover {
+    background-color: #106EBE;
+}
+
+/* Search Bar */
+.dynamics-search {
+    background: white;
+    border: 1px solid var(--dynamics-border);
+    padding: var(--dynamics-spacing-sm) var(--dynamics-spacing-md);
+    border-radius: 2px;
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Navigation */
+.dynamics-nav-item {
+    display: flex;
+    align-items: center;
+    padding: var(--dynamics-spacing-sm) var(--dynamics-spacing-md);
+    color: var(--dynamics-text-secondary);
+    text-decoration: none;
+    margin-bottom: var(--dynamics-spacing-xs);
+}
+
+.dynamics-nav-item:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.dynamics-nav-item.active {
+    background-color: var(--dynamics-primary);
+    color: white;
+}
+
+/* Icons */
+.dynamics-icon {
+    margin-right: var(--dynamics-spacing-sm);
+    font-size: 18px;
+}
+
+/* Charts and Graphs */
+.dynamics-chart {
+    background: white;
+    padding: var(--dynamics-spacing-md);
+    border-radius: 2px;
+    border: 1px solid var(--dynamics-border);
+}

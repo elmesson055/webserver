@@ -1,0 +1,3 @@
+DirectoryIndex views/index.php
+RewriteEngine On
+RewriteRule ^index\.php$ views/index.php [L]

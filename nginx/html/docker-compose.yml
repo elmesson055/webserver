@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: custo_extras_app
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/apache-config.conf:/etc/apache2/sites-available/000-default.conf
+    depends_on:
+      - mysql
+      - redis
+      - memcached
+      - websocket
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=custo_extras
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MEMCACHED_HOST=memcached
+      - MEMCACHED_PORT=11211
+      - WEBSOCKET_HOST=websocket
+      - WEBSOCKET_PORT=8080
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=base64:${APP_KEY:-}
+
+  mysql:
+    image: mysql:8.0
+    container_name: custo_extras_mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=custo_extras
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:alpine
+    container_name: custo_extras_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  memcached:
+    image: memcached:alpine
+    container_name: custo_extras_memcached
+    restart: unless-stopped
+    ports:
+      - "11211:11211"
+
+  websocket:
+    build:
+      context: .
+      dockerfile: docker/websocket/Dockerfile
+    container_name: custo_extras_websocket
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+
+volumes:
+  mysql_data:
+  redis_data:

@@ -1,0 +1,123 @@
+@startuml Financeiro
+
+' Estilo do diagrama
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+' Entidades principais
+entity "financeiro_contas" as contas {
+    * id : INT
+    --
+    * banco_id : INT
+    * tipo_conta : VARCHAR(20)
+    * agencia : VARCHAR(10)
+    * conta : VARCHAR(20)
+    * digito : VARCHAR(2)
+    * descricao : VARCHAR(100)
+    * saldo_inicial : DECIMAL(15,2)
+    * saldo_atual : DECIMAL(15,2)
+    * data_abertura : DATE
+    * status : VARCHAR(20)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "financeiro_movimentacoes" as movimentacoes {
+    * id : INT
+    --
+    * conta_id : INT
+    * tipo : VARCHAR(20)
+    * valor : DECIMAL(15,2)
+    * data_movimento : DATE
+    * descricao : TEXT
+    categoria_id : INT
+    documento : VARCHAR(50)
+    conciliado : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "financeiro_contas_pagar" as contas_pagar {
+    * id : INT
+    --
+    * fornecedor_id : INT
+    * tipo_documento : VARCHAR(50)
+    * numero_documento : VARCHAR(50)
+    * valor_total : DECIMAL(15,2)
+    * data_emissao : DATE
+    * data_vencimento : DATE
+    * status : VARCHAR(20)
+    forma_pagamento : VARCHAR(50)
+    conta_id : INT
+    categoria_id : INT
+    observacoes : TEXT
+    anexo_path : VARCHAR(255)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "financeiro_contas_receber" as contas_receber {
+    * id : INT
+    --
+    * cliente_id : INT
+    * tipo_documento : VARCHAR(50)
+    * numero_documento : VARCHAR(50)
+    * valor_total : DECIMAL(15,2)
+    * data_emissao : DATE
+    * data_vencimento : DATE
+    * status : VARCHAR(20)
+    forma_recebimento : VARCHAR(50)
+    conta_id : INT
+    categoria_id : INT
+    observacoes : TEXT
+    anexo_path : VARCHAR(255)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "financeiro_categorias" as categorias {
+    * id : INT
+    --
+    * nome : VARCHAR(100)
+    * tipo : VARCHAR(20)
+    categoria_pai_id : INT
+    descricao : TEXT
+}
+
+entity "financeiro_analise_credito" as analise_credito {
+    * id : INT
+    --
+    * fornecedor_id : INT
+    * valor_solicitado : DECIMAL(15,2)
+    * score : DECIMAL(5,2)
+    * resultado : VARCHAR(20)
+    * mensagem : VARCHAR(255)
+    * data_analise : TIMESTAMP
+}
+
+entity "fornecedores" as fornecedores {
+    * id : INT
+    --
+    * razao_social : VARCHAR(200)
+    * cnpj : VARCHAR(14)
+    * limite_credito : DECIMAL(15,2)
+    * status_financeiro : VARCHAR(20)
+    * valor_em_aberto : DECIMAL(15,2)
+    * dias_atraso : INT
+}
+
+' Relacionamentos
+contas ||--o{ movimentacoes
+contas ||--o{ contas_pagar
+contas ||--o{ contas_receber
+categorias ||--o{ movimentacoes
+categorias ||--o{ contas_pagar
+categorias ||--o{ contas_receber
+categorias ||--o{ categorias : pai
+fornecedores ||--o{ contas_pagar
+fornecedores ||--o{ analise_credito
+
+@enduml

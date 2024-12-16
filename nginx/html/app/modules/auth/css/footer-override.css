@@ -1,0 +1,7 @@
+/* Override para remover backgrounds do rodapé */
+.footer,
+.footer-dark,
+.footer-light {
+    background: none !important;
+    background-color: transparent !important;
+}

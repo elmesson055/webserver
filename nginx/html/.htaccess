@@ -1,0 +1,31 @@
+Options +FollowSymLinks
+RewriteEngine On
+RewriteBase /
+
+# Redirecionar raiz para login
+RewriteRule ^$ app/modules/auth/login.php [L]
+
+# Se o arquivo ou diretório não existir, redirecionar para index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Prevenir listagem de diretórios
+Options -Indexes
+
+# PHP configurações
+php_value session.cookie_httponly 1
+php_value session.use_only_cookies 1
+php_value session.cookie_samesite "Lax"
+php_flag display_errors on
+php_value error_reporting E_ALL
+
+# Proteger arquivos sensíveis
+<FilesMatch "^(\.env|\.htaccess|composer\.json|composer\.lock)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Forçar HTTPS (descomente se necessário)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

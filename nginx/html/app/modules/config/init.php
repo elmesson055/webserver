@@ -1,0 +1,3 @@
+<?php
+// Código de inicialização
+?>

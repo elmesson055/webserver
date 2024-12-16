@@ -1,0 +1,167 @@
+<?php
+
+class TypeModel {
+    private $db;
+    private $table;
+    private $hasActiveColumn = false;
+    private $hasColorColumn = false;
+    private $hasDescriptionColumn = false;
+
+    public function __construct($db) {
+        $this->db = $db;
+    }
+
+    private function setTable($type) {
+        $tableName = $this->getTableName($type);
+        $this->table = $tableName;
+        $this->checkColumns();
+        return $this;
+    }
+
+    private function checkColumns() {
+        try {
+            error_log("Verificando colunas para tabela: {$this->table}");
+
+            // Verifica coluna active
+            $sql = "SHOW COLUMNS FROM {$this->table} LIKE 'active'";
+            error_log("SQL para verificar coluna active: " . $sql);
+            $stmt = $this->db->query($sql);
+            if ($stmt === false) {
+                error_log("Erro ao verificar coluna active: " . print_r($this->db->errorInfo(), true));
+                return;
+            }
+            $this->hasActiveColumn = $stmt->rowCount() > 0;
+            error_log("hasActiveColumn: " . ($this->hasActiveColumn ? "sim" : "não"));
+
+            // Verifica coluna color
+            $sql = "SHOW COLUMNS FROM {$this->table} LIKE 'color'";
+            error_log("SQL para verificar coluna color: " . $sql);
+            $stmt = $this->db->query($sql);
+            if ($stmt === false) {
+                error_log("Erro ao verificar coluna color: " . print_r($this->db->errorInfo(), true));
+                return;
+            }
+            $this->hasColorColumn = $stmt->rowCount() > 0;
+            error_log("hasColorColumn: " . ($this->hasColorColumn ? "sim" : "não"));
+
+            // Verifica coluna description
+            $sql = "SHOW COLUMNS FROM {$this->table} LIKE 'description'";
+            error_log("SQL para verificar coluna description: " . $sql);
+            $stmt = $this->db->query($sql);
+            if ($stmt === false) {
+                error_log("Erro ao verificar coluna description: " . print_r($this->db->errorInfo(), true));
+                return;
+            }
+            $this->hasDescriptionColumn = $stmt->rowCount() > 0;
+            error_log("hasDescriptionColumn: " . ($this->hasDescriptionColumn ? "sim" : "não"));
+        } catch (Exception $e) {
+            error_log("Erro em checkColumns: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+        }
+    }
+
+    private function getTableName($type) {
+        $tables = [
+            'cargo_types' => 'cargo_types',
+            'cost_types' => 'cost_types',
+            'operational_status' => 'operational_status',
+            'status_types' => 'status_types',
+            'document_types' => 'document_types',
+            'follow_up_types' => 'follow_up_types',
+            'contact_types' => 'contact_types',
+            'billing_status' => 'billing_status'  // Nova tabela adicionada
+        ];
+        
+        if (!isset($tables[$type])) {
+            throw new Exception("Tipo de tabela inválido: $type");
+        }
+        
+        return $tables[$type];
+    }
+
+    public function getAll($type) {
+        $this->setTable($type);
+        $sql = "SELECT * FROM {$this->table}";
+        if ($this->hasActiveColumn) {
+            $sql .= " WHERE active = 1";
+        }
+        $sql .= " ORDER BY name";
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function create($data, $type) {
+        try {
+            error_log("Iniciando criação de tipo: " . $type);
+            error_log("Dados recebidos: " . print_r($data, true));
+
+            $this->setTable($type);
+            error_log("Tabela definida como: " . $this->table);
+            
+            $fields = ['name'];
+            $values = [$data['name']];
+            $placeholders = ['?'];
+            
+            if ($this->hasDescriptionColumn && isset($data['description'])) {
+                error_log("Adicionando coluna description");
+                $fields[] = 'description';
+                $values[] = $data['description'];
+                $placeholders[] = '?';
+            }
+            
+            if ($this->hasColorColumn && isset($data['color'])) {
+                error_log("Adicionando coluna color");
+                $fields[] = 'color';
+                $values[] = $data['color'];
+                $placeholders[] = '?';
+            }
+            
+            $sql = "INSERT INTO {$this->table} (" . implode(', ', $fields) . ") VALUES (" . implode(', ', $placeholders) . ")";
+            error_log("SQL de inserção: " . $sql);
+            error_log("Valores: " . print_r($values, true));
+            
+            $stmt = $this->db->prepare($sql);
+            $result = $stmt->execute($values);
+            
+            if (!$result) {
+                error_log("Erro na execução do SQL: " . print_r($stmt->errorInfo(), true));
+                throw new Exception("Erro ao inserir registro");
+            }
+            
+            return $this->db->lastInsertId();
+        } catch (Exception $e) {
+            error_log("Erro em create: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            throw $e;
+        }
+    }
+
+    public function update($id, $data, $type) {
+        $this->setTable($type);
+        
+        $fields = ['name = ?'];
+        $values = [$data['name']];
+        
+        if ($this->hasDescriptionColumn) {
+            $fields[] = 'description = ?';
+            $values[] = $data['description'] ?? null;
+        }
+        
+        if ($this->hasColorColumn) {
+            $fields[] = 'color = ?';
+            $values[] = $data['color'] ?? null;
+        }
+        
+        $values[] = $id;
+        
+        $sql = "UPDATE {$this->table} SET " . implode(', ', $fields) . " WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($values);
+    }
+
+    public function delete($id, $type) {
+        $this->setTable($type);
+        $sql = "DELETE FROM {$this->table} WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$id]);
+    }
+}

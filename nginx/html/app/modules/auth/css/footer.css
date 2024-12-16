@@ -1,0 +1,138 @@
+/**
+ * Estilos do Rodapé Padrão
+ * Este arquivo deve ser incluído em todas as páginas do sistema
+ */
+
+/* Reset básico para prevenir overflow */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+/* Configurações base */
+:root {
+    --footer-height: 60px;
+    --footer-font-size: 14px;
+    --footer-small-font-size: 12px;
+}
+
+/* Container principal */
+.main-container {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}
+
+/* Footer */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.footer-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.footer-dark,
+.footer-light {
+    color: #000 !important;
+}
+
+.footer-dark .copyright,
+.footer-light .copyright {
+    color: #000 !important;
+}
+
+.footer-dark .doc-link {
+    color: #ffd700 !important;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-dark .doc-link:hover {
+    color: #fff !important;
+    text-decoration: underline;
+}
+
+.footer .copyright {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.footer small {
+    display: block;
+    font-size: 11px;
+    line-height: 1.2;
+    margin: 2px 0;
+    color: #000 !important;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    .footer {
+        padding: 8px 0;
+    }
+
+    .footer-content {
+        padding: 0 10px;
+    }
+
+    .footer .copyright {
+        font-size: 11px;
+    }
+
+    .footer small {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer {
+        padding: 6px 0;
+    }
+
+    .footer-content {
+        padding: 0 8px;
+    }
+
+    .footer .copyright {
+        font-size: 10px;
+    }
+
+    .footer small {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 320px) {
+    .footer {
+        padding: 4px 0;
+    }
+
+    .footer-content {
+        padding: 0 5px;
+    }
+
+    .footer .copyright {
+        font-size: 9px;
+    }
+
+    .footer small {
+        font-size: 8px;
+    }
+}

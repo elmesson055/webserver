@@ -1,0 +1,205 @@
+/* Reset e base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Layout */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -2px;
+    gap: 4px;
+}
+
+.col {
+    flex: 1;
+    padding: 0 2px;
+    min-width: 150px;
+}
+
+/* Cards */
+.card {
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    margin-bottom: 4px;
+    padding: 4px;
+}
+
+.card-title {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.card-body {
+    padding: 4px;
+}
+
+/* Dashboard */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.stat-card {
+    background: #fff;
+    padding: 4px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    font-size: 0.8rem;
+}
+
+.stat-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Tabelas */
+.table-responsive {
+    margin: 0 -4px;
+    padding: 0 4px;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+}
+
+.table th,
+.table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.table th {
+    font-weight: 600;
+    background: #f8f9fa;
+}
+
+/* Utilitários */
+.mb-2 {
+    margin-bottom: 6px !important;
+}
+
+.mt-2 {
+    margin-top: 6px !important;
+}
+
+.mb-4 {
+    margin-bottom: 8px;
+}
+
+.mt-4 {
+    margin-top: 8px;
+}
+
+/* Cores de fundo */
+.bg-primary { background: #007bff; }
+.bg-success { background: #28a745; }
+.bg-warning { background: #ffc107; }
+.bg-danger { background: #dc3545; }
+.bg-info { background: #17a2b8; }
+
+/* Badges */
+.badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: normal;
+    color: #fff;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 4px;
+    }
+
+    .stat-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
+    }
+
+    .stat-value {
+        font-size: 0.85rem;
+    }
+
+    .stat-label {
+        font-size: 0.65rem;
+    }
+
+    .card-body {
+        padding: 6px;
+    }
+
+    .table {
+        font-size: 0.8rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 4px 6px;
+    }
+}
+
+/* Charts */
+.chart-container {
+    position: relative;
+    height: 180px;
+    margin: 4px 0;
+}
