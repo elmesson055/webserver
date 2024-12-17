@@ -1,13 +1,13 @@
 <?php
 // Definir caminho base
-if (!defined('BASE_PATH')) {
-    define('BASE_PATH', 'C:/webserver/nginx/html');
-}
+define('BASE_PATH', dirname(dirname(dirname(__DIR__))));
 
-// Carregar configurações
-require_once BASE_PATH . '/app/config/config.php';
+// Carregar autoloader e configurações básicas
+require_once BASE_PATH . '/app/autoload.php';
+require_once BASE_PATH . '/config/app.php';
+require_once BASE_PATH . '/config/database.php';
 
-// Iniciar sessão se ainda não estiver iniciada
+// Iniciar sessão
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -18,6 +18,5 @@ if (isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Redirecionar para a view de login
-header('Location: /app/modules/auth/views/login.php');
-exit();
+// Incluir a view de login diretamente
+require_once __DIR__ . '/views/login.php';

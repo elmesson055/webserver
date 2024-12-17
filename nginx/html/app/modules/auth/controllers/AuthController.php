@@ -24,7 +24,10 @@ class AuthController {
         try {
             // Validação básica
             if (empty($username) || empty($password)) {
-                throw new Exception('Por favor, preencha todos os campos.');
+                return [
+                    'success' => false,
+                    'message' => 'Por favor, preencha todos os campos.'
+                ];
             }
 
             // Autenticar usuário
@@ -33,7 +36,6 @@ class AuthController {
             // Iniciar sessão
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['nome_usuario'];
-            $_SESSION['nome'] = $user['nome'];
             $_SESSION['sobrenome'] = $user['sobrenome'];
             $_SESSION['funcao_id'] = $user['funcao_id'];
             $_SESSION['last_activity'] = time();
@@ -48,7 +50,7 @@ class AuthController {
             ];
 
         } catch (Exception $e) {
-            error_log("Erro no login: " . $e->getMessage());
+            error_log("Erro no login: " . $e->getMessage() . "\n" . $e->getTraceAsString());
             return [
                 'success' => false,
                 'message' => $e->getMessage()
@@ -68,9 +70,11 @@ class AuthController {
             setcookie(session_name(), '', time() - 3600, '/');
         }
 
-        // Redirecionar para a página de login
-        header('Location: /app/modules/auth/views/login.php');
-        exit();
+        return [
+            'success' => true,
+            'message' => 'Logout realizado com sucesso!',
+            'redirect' => '/app/modules/auth/views/login.php'
+        ];
     }
 
     public function isAuthenticated() {

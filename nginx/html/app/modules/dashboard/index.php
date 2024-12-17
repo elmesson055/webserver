@@ -1,32 +1,31 @@
 <?php
-// Definir caminho base se ainda não estiver definido
-if (!defined('BASE_PATH')) {
-    define('BASE_PATH', 'C:/webserver/nginx/html');
-}
+// Definir caminho base
+define('BASE_PATH', dirname(dirname(dirname(__DIR__))));
 
-// Carregar configurações globais
-require_once BASE_PATH . '/app/config/config.php';
+// Carregar autoloader e configurações
+require_once BASE_PATH . '/app/autoload.php';
+require_once BASE_PATH . '/config/app.php';
+require_once BASE_PATH . '/config/database.php';
 
 // Carregar módulo de autenticação
-require_once BASE_PATH . '/app/modules/auth/auth_helper.php';
+require_once BASE_PATH . '/app/modules/auth/session.php';
 
 // Verificar sessão
 check_session();
 
 try {
-    // Testar conexão com o banco
-    $conn = get_database_connection();
+    // Usar o Database singleton
+    $db = \App\Core\Database::getInstance();
     
     // Buscar informações do usuário
     $user_id = $_SESSION['user_id'];
-    $stmt = $conn->prepare("SELECT nome_usuario, sobrenome, funcao_id FROM usuarios WHERE id = ?");
-    $stmt->bind_param("i", $user_id);
+    $stmt = $db->prepare("SELECT nome_usuario, sobrenome, funcao_id FROM usuarios WHERE id = :user_id");
+    $stmt->bindValue(':user_id', $user_id, \PDO::PARAM_INT);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
+    $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
     if (!$user) {
-        throw new Exception('Usuário não encontrado');
+        throw new \Exception('Usuário não encontrado');
     }
 
     // Definir variáveis para a view
@@ -39,13 +38,13 @@ try {
         (SELECT COUNT(*) FROM funcoes WHERE ativo = TRUE) as total_funcoes,
         (SELECT COUNT(*) FROM permissoes) as total_permissoes";
     
-    $result = $conn->query($sql);
-    $stats = $result->fetch_assoc();
+    $stmt = $db->query($sql);
+    $stats = $stmt->fetch(\PDO::FETCH_ASSOC);
 
     // Incluir o template do dashboard
     $page_title = "Dashboard";
     require_once BASE_PATH . '/app/templates/header.php';
-} catch (Exception $e) {
+} catch (\Exception $e) {
     error_log("Erro no dashboard: " . $e->getMessage());
     $_SESSION['error'] = "Ocorreu um erro ao carregar o dashboard. Por favor, tente novamente.";
     header('Location: /app/modules/auth/login.php');

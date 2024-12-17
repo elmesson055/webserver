@@ -15,7 +15,7 @@ class Database {
             error_log("=== Iniciando conexão com o banco de dados ===");
             
             // Carregar configuração
-            $database_config = dirname(dirname(__DIR__)) . '/config/database.php';
+            $database_config = dirname(dirname(dirname(__DIR__))) . '/config/database.php';
             error_log("Carregando configurações do banco: " . $database_config);
             
             if (!file_exists($database_config)) {
@@ -48,31 +48,25 @@ class Database {
             );
             
             error_log("DSN configurada: " . $dsn);
-            error_log("Usuário: " . $this->config['username']);
-            
-            $options = [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . $this->config['charset']
-            ];
 
-            error_log("Tentando estabelecer conexão...");
-            
+            // Criar conexão com o banco
             $this->connection = new PDO(
-                $dsn, 
-                $this->config['username'], 
-                $this->config['password'], 
-                $options
+                $dsn,
+                $this->config['username'],
+                $this->config['password'],
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::ATTR_PERSISTENT => true
+                ]
             );
             
             error_log("Conexão estabelecida com sucesso!");
             
         } catch (PDOException $e) {
             error_log("Erro ao conectar com o banco de dados: " . $e->getMessage());
-            error_log("Código do erro: " . $e->getCode());
-            error_log("Stack trace: " . $e->getTraceAsString());
-            throw new PDOException("Erro de conexão com o banco de dados: " . $e->getMessage());
+            throw new PDOException("Erro ao conectar com o banco de dados: " . $e->getMessage());
         }
     }
 
@@ -80,50 +74,24 @@ class Database {
         if (self::$instance === null) {
             self::$instance = new self();
         }
-        return self::$instance;
-    }
-
-    public function getConnection() {
-        return $this->connection;
+        return self::$instance->connection;
     }
 
     public function prepare($sql) {
-        try {
-            return $this->connection->prepare($sql);
-        } catch (PDOException $e) {
-            error_log("Erro ao preparar query: " . $e->getMessage());
-            throw $e;
-        }
+        return $this->connection->prepare($sql);
     }
 
     public function query($sql) {
-        try {
-            return $this->connection->query($sql);
-        } catch (PDOException $e) {
-            error_log("Erro ao executar query: " . $e->getMessage());
-            throw $e;
-        }
+        return $this->connection->query($sql);
     }
 
     public function lastInsertId() {
         return $this->connection->lastInsertId();
     }
 
-    public function beginTransaction() {
-        return $this->connection->beginTransaction();
-    }
-
-    public function commit() {
-        return $this->connection->commit();
-    }
-
-    public function rollBack() {
-        return $this->connection->rollBack();
-    }
-
+    // Prevent cloning of the instance
     private function __clone() {}
-    
-    public function __wakeup() {
-        throw new PDOException("Cannot unserialize singleton");
-    }
+
+    // Prevent unserializing of the instance
+    private function __wakeup() {}
 }
