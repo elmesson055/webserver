@@ -15,7 +15,7 @@ if (!defined('BASE_PATH')) {
 }
 
 // Carregar configurações de sessão antes de qualquer coisa
-require_once __DIR__ . '/session.php';
+require_once BASE_PATH . '/app/modules/auth/session.php';
 
 // Configurações de ambiente
 define('DEBUG_MODE', true);

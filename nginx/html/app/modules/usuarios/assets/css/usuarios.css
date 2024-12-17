@@ -1,0 +1,116 @@
+/* Estilos específicos para o módulo de usuários */
+
+/* Tabela de usuários */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: var(--dynamics-surface);
+    font-weight: 600;
+    border-top: none;
+    padding: 1rem;
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* Badges de status */
+.badge {
+    padding: 0.5em 0.8em;
+    font-weight: 500;
+}
+
+/* Botões de ação na tabela */
+.btn-link {
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.25rem;
+    text-decoration: none;
+}
+
+.btn-link:hover {
+    background-color: var(--dynamics-surface);
+    border-radius: 4px;
+}
+
+/* Modal */
+.modal-content {
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background-color: var(--dynamics-surface);
+    border-bottom: 1px solid #E1E1E1;
+    padding: 1rem 1.5rem;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: var(--dynamics-secondary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #E1E1E1;
+    padding: 1rem 1.5rem;
+}
+
+/* Formulários */
+.form-floating > .form-control {
+    padding: 1rem;
+    height: calc(3.5rem + 2px);
+}
+
+.form-floating > .form-control-lg {
+    height: calc(3.5rem + 2px);
+    line-height: 1.25;
+}
+
+.form-floating > label {
+    padding: 1rem;
+}
+
+/* Animações */
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .table-responsive {
+        margin: 0 -1rem;
+    }
+    
+    .dynamics-card {
+        padding: 1rem;
+    }
+    
+    .btn-link {
+        padding: 0.5rem;
+    }
+}
+
+/* Sweet Alert customização */
+.swal2-popup {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.swal2-title {
+    font-weight: 600;
+    color: var(--dynamics-secondary);
+}
+
+.swal2-confirm {
+    background-color: var(--dynamics-primary) !important;
+}

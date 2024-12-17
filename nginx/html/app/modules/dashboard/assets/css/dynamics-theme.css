@@ -1,0 +1,171 @@
+/* Variáveis do tema Dynamics 365 */
+:root {
+    /* Cores Principais */
+    --dynamics-primary: #0078D4;
+    --dynamics-secondary: #605E5C;
+    --dynamics-background: #FFFFFF;
+    --dynamics-surface: #F8F9FA;
+    --dynamics-sidebar: #1B1B1F;
+
+    /* Cores de Status */
+    --dynamics-success: #107C10;
+    --dynamics-warning: #797673;
+    --dynamics-error: #D83B01;
+    --dynamics-info: #0078D4;
+
+    /* Espaçamento */
+    --dynamics-spacing-xs: 4px;
+    --dynamics-spacing-sm: 8px;
+    --dynamics-spacing-md: 16px;
+    --dynamics-spacing-lg: 24px;
+    --dynamics-spacing-xl: 32px;
+
+    /* Dimensões */
+    --header-height: 48px;
+    --sidebar-width-expanded: 250px;
+    --sidebar-width-collapsed: 48px;
+}
+
+/* Reset e Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--dynamics-secondary);
+    background-color: var(--dynamics-surface);
+}
+
+/* Layout Principal */
+.dynamics-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.dynamics-sidebar {
+    width: var(--sidebar-width-expanded);
+    background-color: var(--dynamics-sidebar);
+    color: white;
+    transition: width 0.3s ease;
+}
+
+.dynamics-sidebar.collapsed {
+    width: var(--sidebar-width-collapsed);
+}
+
+/* Header */
+.dynamics-header {
+    height: var(--header-height);
+    background-color: var(--dynamics-primary);
+    color: white;
+    padding: 0 var(--dynamics-spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: var(--sidebar-width-expanded);
+    z-index: 1000;
+}
+
+/* Área de Conteúdo */
+.dynamics-content {
+    flex: 1;
+    padding: var(--dynamics-spacing-lg);
+    margin-top: var(--header-height);
+    background-color: var(--dynamics-surface);
+}
+
+/* Cards */
+.dynamics-card {
+    background: var(--dynamics-background);
+    border: 1px solid #E1E1E1;
+    border-radius: 2px;
+    padding: var(--dynamics-spacing-md);
+    transition: box-shadow 0.3s ease;
+}
+
+.dynamics-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Cards de Sumário */
+.dynamics-summary-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--dynamics-spacing-md);
+    margin-bottom: var(--dynamics-spacing-lg);
+}
+
+.summary-item {
+    background: var(--dynamics-background);
+    padding: var(--dynamics-spacing-md);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: var(--dynamics-spacing-md);
+}
+
+.summary-icon {
+    font-size: 24px;
+    color: var(--dynamics-primary);
+}
+
+.summary-content {
+    flex: 1;
+}
+
+.summary-number {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--dynamics-primary);
+    line-height: 1.2;
+}
+
+.summary-label {
+    color: var(--dynamics-secondary);
+    font-size: 12px;
+}
+
+/* Botões */
+.dynamics-btn {
+    background: var(--dynamics-primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.dynamics-btn:hover {
+    background-color: #106EBE;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .dynamics-sidebar {
+        position: fixed;
+        left: -250px;
+    }
+
+    .dynamics-sidebar.show {
+        left: 0;
+    }
+
+    .dynamics-header {
+        left: 0;
+    }
+
+    .dynamics-content {
+        margin-left: 0;
+    }
+}
