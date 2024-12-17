@@ -11,10 +11,10 @@ class UserModel {
     public function __construct() {
         try {
             $this->db = Database::getInstance();
-            error_log("Database connection established successfully");
+            error_log("Database connection established successfully in UserModel");
         } catch (Exception $e) {
-            error_log("Error connecting to database: " . $e->getMessage());
-            throw $e;
+            error_log("Error connecting to database in UserModel: " . $e->getMessage());
+            throw new Exception("Erro ao conectar com o banco de dados. Por favor, tente novamente mais tarde.");
         }
     }
 
@@ -22,11 +22,16 @@ class UserModel {
         try {
             error_log("Attempting authentication for username: " . $username);
             
-            $sql = "SELECT id, nome_usuario, email, password_hash, sobrenome, 
-                           funcao_id, status, ultimo_login
-                    FROM usuarios 
-                    WHERE (email = :username OR nome_usuario = :username)
-                    AND status = 'Ativo'";
+            // Primeiro, verificar se o usuário está bloqueado
+            if ($this->isUserBlocked($username)) {
+                throw new Exception('Conta temporariamente bloqueada devido a múltiplas tentativas de login. Tente novamente mais tarde.');
+            }
+            
+            $sql = "SELECT u.id, u.nome_usuario, u.email, u.password_hash, u.sobrenome, 
+                           u.funcao_id, u.status, u.ultimo_login
+                    FROM usuarios u
+                    WHERE (u.email = :username OR u.nome_usuario = :username)
+                    AND u.status = 'Ativo'";
             
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':username', $username, PDO::PARAM_STR);
@@ -48,6 +53,9 @@ class UserModel {
             
             error_log("Password verified successfully");
             
+            // Limpar tentativas de login após sucesso
+            $this->clearFailedLogins($username);
+            
             // Remover dados sensíveis antes de retornar
             unset($user['password_hash']);
             
@@ -58,8 +66,42 @@ class UserModel {
             return $user;
             
         } catch (Exception $e) {
-            error_log("Authentication error: " . $e->getMessage());
+            error_log("Authentication error in UserModel: " . $e->getMessage());
             throw $e;
+        }
+    }
+
+    private function isUserBlocked($username) {
+        try {
+            $sql = "SELECT bloqueado_ate 
+                    FROM tentativas_login t
+                    JOIN usuarios u ON t.usuario_id = u.id
+                    WHERE (u.email = :username OR u.nome_usuario = :username)
+                    AND bloqueado_ate > NOW()";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':username', $username, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
+        } catch (Exception $e) {
+            error_log("Error checking if user is blocked: " . $e->getMessage());
+            return false; // Em caso de erro, permitir o login
+        }
+    }
+
+    private function clearFailedLogins($username) {
+        try {
+            $sql = "DELETE t FROM tentativas_login t
+                    JOIN usuarios u ON t.usuario_id = u.id
+                    WHERE u.email = :username OR u.nome_usuario = :username";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':username', $username, PDO::PARAM_STR);
+            $stmt->execute();
+        } catch (Exception $e) {
+            error_log("Error clearing failed logins: " . $e->getMessage());
+            // Não lançar exceção pois esta é uma operação secundária
         }
     }
 
@@ -73,22 +115,26 @@ class UserModel {
             return $result;
         } catch (Exception $e) {
             error_log("Error updating last login: " . $e->getMessage());
-            throw $e;
+            // Não lançar exceção pois esta é uma operação secundária
+            return false;
         }
     }
 
     private function registerFailedLogin($username) {
         try {
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
             error_log("Registering failed login attempt for user: " . $username . " from IP: " . $ip);
             
-            $sql = "INSERT INTO tentativas_login (usuario_id, ip_address, tentativas) 
-                    SELECT id, :ip, 1 FROM usuarios WHERE email = :username OR nome_usuario = :username
+            $sql = "INSERT INTO tentativas_login (usuario_id, ip_address, tentativas, data_tentativa) 
+                    SELECT id, :ip, 1, NOW() 
+                    FROM usuarios 
+                    WHERE email = :username OR nome_usuario = :username
                     ON DUPLICATE KEY UPDATE 
                     tentativas = tentativas + 1,
+                    data_tentativa = NOW(),
                     bloqueado_ate = CASE 
-                        WHEN tentativas >= 5 THEN DATE_ADD(NOW(), INTERVAL 30 MINUTE)
-                        ELSE NULL 
+                        WHEN tentativas >= 4 THEN DATE_ADD(NOW(), INTERVAL 30 MINUTE)
+                        ELSE bloqueado_ate 
                     END";
             
             $stmt = $this->db->prepare($sql);
@@ -98,7 +144,7 @@ class UserModel {
             error_log("Failed login registration result: " . ($result ? 'success' : 'failed'));
         } catch (Exception $e) {
             error_log("Error registering failed login: " . $e->getMessage());
-            // Don't throw the exception as this is a secondary operation
+            // Não lançar exceção pois esta é uma operação secundária
         }
     }
 }

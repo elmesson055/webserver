@@ -20,8 +20,10 @@ if (session_status() === PHP_SESSION_NONE) {
  */
 function check_session() {
     if (!isset($_SESSION['user_id'])) {
-        header("Location: /app/modules/auth/login.php");
-        exit;
+        if (basename($_SERVER['PHP_SELF']) !== 'login.php') {
+            header("Location: /app/modules/auth/login.php");
+            exit;
+        }
     }
 }
 

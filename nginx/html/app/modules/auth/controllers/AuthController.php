@@ -13,6 +13,12 @@ class AuthController {
             if (!defined('BASE_PATH')) {
                 require_once dirname(dirname(dirname(dirname(__DIR__)))) . '/config/config.php';
             }
+            
+            // Garantir que a sessão está iniciada
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            
             $this->userModel = new UserModel();
         } catch (Exception $e) {
             error_log("Erro no construtor do AuthController: " . $e->getMessage());
@@ -22,6 +28,16 @@ class AuthController {
 
     public function login($username, $password) {
         try {
+            // Validar CSRF token
+            if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
+                !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                error_log("Erro de validação CSRF");
+                return [
+                    'success' => false,
+                    'message' => 'Erro de validação do token de segurança.'
+                ];
+            }
+            
             // Validação básica
             if (empty($username) || empty($password)) {
                 return [
@@ -33,6 +49,13 @@ class AuthController {
             // Autenticar usuário
             $user = $this->userModel->authenticate($username, $password);
 
+            if (!$user) {
+                return [
+                    'success' => false,
+                    'message' => 'Usuário não encontrado ou senha incorreta.'
+                ];
+            }
+
             // Iniciar sessão
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['nome_usuario'];
@@ -40,8 +63,14 @@ class AuthController {
             $_SESSION['funcao_id'] = $user['funcao_id'];
             $_SESSION['last_activity'] = time();
 
+            // Regenerar ID da sessão após login bem-sucedido
+            session_regenerate_id(true);
+
             // Atualizar último login
             $this->userModel->updateLastLogin($user['id']);
+
+            // Limpar token CSRF após uso
+            unset($_SESSION['csrf_token']);
 
             return [
                 'success' => true,
@@ -51,10 +80,7 @@ class AuthController {
 
         } catch (Exception $e) {
             error_log("Erro no login: " . $e->getMessage() . "\n" . $e->getTraceAsString());
-            return [
-                'success' => false,
-                'message' => $e->getMessage()
-            ];
+            throw $e;
         }
     }
 
@@ -73,7 +99,7 @@ class AuthController {
         return [
             'success' => true,
             'message' => 'Logout realizado com sucesso!',
-            'redirect' => '/app/modules/auth/views/login.php'
+            'redirect' => '/app/modules/auth/login.php'
         ];
     }
 

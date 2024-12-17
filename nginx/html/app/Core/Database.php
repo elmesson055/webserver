@@ -35,7 +35,7 @@ class Database {
                 if (!isset($this->config[$field])) {
                     throw new PDOException("Campo de configuração ausente: $field");
                 }
-                error_log("$field: " . $this->config[$field]);
+                error_log("$field: " . ($field === 'password' ? '[REDACTED]' : $this->config[$field]));
             }
 
             // Configura a conexão
@@ -72,17 +72,36 @@ class Database {
 
     public static function getInstance() {
         if (self::$instance === null) {
-            self::$instance = new self();
+            try {
+                self::$instance = new self();
+            } catch (PDOException $e) {
+                error_log("Erro ao obter instância do banco: " . $e->getMessage());
+                throw $e;
+            }
         }
-        return self::$instance->connection;
+        return self::$instance->getConnection();
+    }
+
+    public function getConnection() {
+        return $this->connection;
     }
 
     public function prepare($sql) {
-        return $this->connection->prepare($sql);
+        try {
+            return $this->connection->prepare($sql);
+        } catch (PDOException $e) {
+            error_log("Erro ao preparar query: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     public function query($sql) {
-        return $this->connection->query($sql);
+        try {
+            return $this->connection->query($sql);
+        } catch (PDOException $e) {
+            error_log("Erro ao executar query: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     public function lastInsertId() {
@@ -93,5 +112,7 @@ class Database {
     private function __clone() {}
 
     // Prevent unserializing of the instance
-    private function __wakeup() {}
+    public function __wakeup() {
+        throw new \Exception("Cannot unserialize singleton");
+    }
 }

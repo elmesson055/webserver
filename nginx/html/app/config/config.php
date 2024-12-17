@@ -9,13 +9,10 @@ if (headers_sent($filename, $linenum)) {
 
 // Definir caminho base
 if (!defined('BASE_PATH')) {
-    define('BASE_PATH', 'C:\webserver\nginx\html');
+    define('BASE_PATH', dirname(dirname(__DIR__)));
 } else {
     error_log("Constante BASE_PATH já definida. Valor atual: " . BASE_PATH);
 }
-
-// Carregar configurações de sessão antes de qualquer coisa
-require_once BASE_PATH . '/app/modules/auth/session.php';
 
 // Configurações de ambiente
 define('DEBUG_MODE', true);
@@ -30,51 +27,20 @@ define('DB_PASS', 'LOg1st1ca2024!');        // Senha correta
 define('DB_PORT', '3306');                   // Porta padrão
 define('DB_CHARSET', 'utf8mb4');             // Charset correto
 
-/**
- * Obtém uma conexão com o banco de dados
- * @return mysqli Conexão com o banco de dados
- * @throws Exception Se não conseguir conectar ao banco
- */
-function get_database_connection() {
-    static $conn = null;
-    
-    // Se já existe uma conexão, retorna ela
-    if ($conn !== null) {
-        return $conn;
-    }
-    
-    try {
-        // Tenta conectar primeiro sem especificar o banco
-        $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
-        
-        // Verifica se houve erro na conexão
-        if ($conn->connect_error) {
-            $error_msg = "Erro ao conectar ao MySQL: " . $conn->connect_error;
-            error_log($error_msg);
-            if (DEBUG_MODE) {
-                echo "<pre>$error_msg\n";
-                echo "Host: " . DB_HOST . "\n";
-                echo "User: " . DB_USER . "\n";
-                echo "</pre>";
-            }
-            throw new Exception($error_msg);
-        }
-        
-        // Define charset como utf8mb4
-        $conn->set_charset(DB_CHARSET);
-        
-        return $conn;
-    } catch (Exception $e) {
-        error_log("Erro na conexão com o banco: " . $e->getMessage());
-        if (DEBUG_MODE) {
-            echo "<pre>Erro na conexão com o banco: " . $e->getMessage() . "</pre>";
-        }
-        throw $e;
-    }
-}
-
 // Configurações de timezone
 date_default_timezone_set('America/Sao_Paulo');
+
+// Configurações de sessão
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_only_cookies', 1);
+ini_set('session.cookie_secure', 1);
+ini_set('session.gc_maxlifetime', 3600);
+ini_set('session.cookie_lifetime', 0);
+
+// Iniciar sessão se ainda não estiver iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Configurações da aplicação
 define('APP_NAME', 'Sistema de Gestão de Logistica e Transportes');
@@ -124,3 +90,46 @@ define('LOG_LEVEL', DEBUG_MODE ? 'debug' : 'error');
 // URLs da aplicação
 define('ASSETS_URL', BASE_URL . '/assets');
 define('UPLOADS_URL', BASE_URL . '/uploads');
+
+/**
+ * Obtém uma conexão com o banco de dados
+ * @return mysqli Conexão com o banco de dados
+ * @throws Exception Se não conseguir conectar ao banco
+ */
+function get_database_connection() {
+    static $conn = null;
+    
+    // Se já existe uma conexão, retorna ela
+    if ($conn !== null) {
+        return $conn;
+    }
+    
+    try {
+        // Tenta conectar primeiro sem especificar o banco
+        $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
+        
+        // Verifica se houve erro na conexão
+        if ($conn->connect_error) {
+            $error_msg = "Erro ao conectar ao MySQL: " . $conn->connect_error;
+            error_log($error_msg);
+            if (DEBUG_MODE) {
+                echo "<pre>$error_msg\n";
+                echo "Host: " . DB_HOST . "\n";
+                echo "User: " . DB_USER . "\n";
+                echo "</pre>";
+            }
+            throw new Exception($error_msg);
+        }
+        
+        // Define charset como utf8mb4
+        $conn->set_charset(DB_CHARSET);
+        
+        return $conn;
+    } catch (Exception $e) {
+        error_log("Erro na conexão com o banco: " . $e->getMessage());
+        if (DEBUG_MODE) {
+            echo "<pre>Erro na conexão com o banco: " . $e->getMessage() . "</pre>";
+        }
+        throw $e;
+    }
+}

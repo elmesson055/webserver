@@ -13,6 +13,9 @@ define('APP_ENV', 'development');
 // URL base da aplicação
 define('APP_URL', 'http://localhost');
 
+// Debug mode
+define('DEBUG_MODE', APP_ENV === 'development');
+
 // Configurações de timezone
 date_default_timezone_set('America/Sao_Paulo');
 
@@ -20,9 +23,11 @@ date_default_timezone_set('America/Sao_Paulo');
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
 ini_set('session.cookie_secure', 0); // Mudar para 1 em produção com HTTPS
+ini_set('session.gc_maxlifetime', 1800); // 30 minutos
+ini_set('session.cookie_lifetime', 0); // Até o navegador fechar
 
 // Configurações de erro (development)
-if (APP_ENV === 'development') {
+if (DEBUG_MODE) {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
@@ -37,3 +42,14 @@ define('CSRF_PROTECTION', true);
 define('PASSWORD_MIN_LENGTH', 8);
 define('MAX_LOGIN_ATTEMPTS', 5);
 define('LOGIN_TIMEOUT', 15); // minutos
+
+// Diretórios da aplicação
+define('APP_PATH', dirname(__DIR__) . '/app');
+define('CONFIG_PATH', dirname(__DIR__) . '/config');
+define('PUBLIC_PATH', dirname(__DIR__) . '/public');
+define('UPLOAD_PATH', PUBLIC_PATH . '/uploads');
+
+// URLs da aplicação
+define('BASE_URL', APP_URL);
+define('ASSETS_URL', BASE_URL . '/assets');
+define('UPLOAD_URL', BASE_URL . '/uploads');
