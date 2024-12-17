@@ -39,9 +39,9 @@ function check_user_permission($permissao) {
     $sql = "SELECT COUNT(*) as tem_permissao 
             FROM usuarios u
             JOIN funcoes f ON u.funcao_id = f.id
-            JOIN funcao_permissoes fp ON f.id = fp.funcao_id
+            JOIN funcao_permissao fp ON f.id = fp.funcao_id
             JOIN permissoes p ON fp.permissao_id = p.id
-            WHERE u.id = ? AND p.nome = ? AND u.ativo = 1 AND f.ativo = 1";
+            WHERE u.id = ? AND p.nome = ? AND u.status = 'Ativo' AND f.ativo = TRUE";
     
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("is", $_SESSION['user_id'], $permissao);

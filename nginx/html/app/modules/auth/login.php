@@ -5,8 +5,19 @@ if (!defined('BASE_PATH')) {
 }
 
 // Carregar configurações
-require_once(BASE_PATH . '/app/modules/auth/config/config.php');
+require_once BASE_PATH . '/app/config/config.php';
 
-// Redirecionar para a view correta
-header('Location: views/login.php');
+// Iniciar sessão se ainda não estiver iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Se já estiver logado, redirecionar para o dashboard
+if (isset($_SESSION['user_id'])) {
+    header('Location: /app/modules/dashboard/index.php');
+    exit();
+}
+
+// Redirecionar para a view de login
+header('Location: /app/modules/auth/views/login.php');
 exit();
